@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Shorts Uploader</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@300;400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --bg:#0c0c0e;
+  --surface:#151518;
+  --surface-2:#1b1b1f;
+  --surface-3:#222228;
+  --border:#2a2a30;
+  --border-light:#333339;
+  --text:#e4e2de;
+  --text-2:#918e88;
+  --text-3:#5c5a55;
+  --red:#ef4444;
+  --red-dim:#3b1818;
+  --red-glow:rgba(239,68,68,.12);
+  --green:#22c55e;
+  --green-dim:#0f2e1a;
+  --green-glow:rgba(34,197,94,.12);
+  --blue:#3b82f6;
+  --blue-dim:#151e33;
+  --blue-glow:rgba(59,130,246,.12);
+  --amber:#f59e0b;
+  --amber-dim:#2e2208;
+  --amber-glow:rgba(245,158,11,.12);
+  --accent:#ef4444;
+  --accent-dim:#3b1818;
+  --accent-glow:rgba(239,68,68,.15);
+  --mono:'IBM Plex Mono',monospace;
+  --display:'Anybody',system-ui,sans-serif;
+  --sans:'Plus Jakarta Sans',system-ui,sans-serif;
+  --radius:10px;
+  --radius-lg:14px;
+}
+
+html{font-size:14px}
+body{
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.5;
+  min-height:100vh;
+}
+
+
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  opacity:.4;
+  background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");
+  background-size:128px;
+}
+
+
+body::after{
+  content:'';position:fixed;top:-20%;left:-10%;
+  width:60vw;height:60vw;
+  background:radial-gradient(circle,rgba(239,68,68,.04),transparent 65%);
+  pointer-events:none;z-index:0;
+}
+
+
+.shell{
+  position:relative;z-index:1;
+  display:flex;min-height:100vh;
+}
+
+
+.sidebar{
+  width:240px;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  padding:24px 0;
+  display:flex;flex-direction:column;
+  position:fixed;top:0;bottom:0;
+  z-index:10;
+}
+
+.brand{padding:0 20px 24px;border-bottom:1px solid var(--border)}
+.brand-icon{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:36px;height:36px;
+  background:var(--accent-dim);
+  border:1px solid rgba(239,68,68,.2);
+  border-radius:10px;
+  margin-bottom:12px;
+}
+.brand-icon svg{width:18px;height:18px;color:var(--accent)}
+.brand h1{
+  font-family:var(--display);
+  font-size:16px;font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  line-height:1.2;
+}
+.brand h1 span{color:var(--accent)}
+.brand-sub{font-size:11px;color:var(--text-3);margin-top:4px;letter-spacing:.5px}
+
+.nav{padding:12px 10px;flex:1}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 14px;margin-bottom:2px;
+  border-radius:8px;
+  font-size:13px;font-weight:500;
+  color:var(--text-2);
+  cursor:pointer;
+  transition:all .12s ease;
+  border:none;background:none;width:100%;text-align:left;
+  font-family:var(--sans);
+}
+.nav-item:hover{background:var(--surface-2);color:var(--text)}
+.nav-item.active{background:var(--accent-dim);color:var(--accent);font-weight:600;border:1px solid rgba(239,68,68,.15)}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:.6}
+.nav-item.active svg{opacity:1}
+.nav-count{
+  margin-left:auto;
+  font-family:var(--mono);font-size:11px;font-weight:500;
+  color:var(--text-3);
+  background:var(--surface-3);
+  padding:1px 7px;border-radius:4px;
+}
+
+.sidebar-footer{
+  padding:14px 20px;
+  border-top:1px solid var(--border);
+}
+.sidebar-footer span{font-size:11px;color:var(--text-3);letter-spacing:.5px}
+.version{font-family:var(--mono);color:var(--text-3)}
+
+
+.main{margin-left:240px;flex:1;padding:28px 36px;max-width:1000px}
+.main:has(#sec-logs.active){max-width:none}
+
+
+.page-header{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  margin-bottom:24px;padding-bottom:20px;
+  border-bottom:1px solid var(--border);
+}
+.page-title{
+  font-family:var(--display);font-size:24px;font-weight:700;
+  letter-spacing:.5px;
+}
+.page-desc{font-size:12px;color:var(--text-3);margin-top:3px}
+
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px 18px;
+  transition:all .15s;
+}
+.stat:hover{border-color:var(--border-light);transform:translateY(-1px)}
+.stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-3);margin-bottom:6px}
+.stat-value{font-family:var(--display);font-size:28px;font-weight:800;letter-spacing:-1px;line-height:1}
+.stat-value.red{color:var(--red)}
+.stat-value.green{color:var(--green)}
+.stat-value.blue{color:var(--blue)}
+.stat-value.amber{color:var(--amber)}
+
+
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  margin-bottom:16px;
+  overflow:hidden;
+  transition:border-color .15s;
+}
+.card:hover{border-color:var(--border-light)}
+.card-header{
+  padding:14px 18px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-header h3{
+  font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:2px;color:var(--text-3);
+}
+.card-body{padding:0}
+
+
+table{width:100%;border-collapse:collapse}
+th{
+  font-size:10px;font-weight:700;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:1.5px;
+  text-align:left;padding:11px 16px;
+  border-bottom:1px solid var(--border);
+  background:var(--surface-2);
+}
+td{
+  padding:12px 16px;
+  border-bottom:1px solid rgba(42,42,48,.5);
+  font-size:13px;
+  vertical-align:middle;
+}
+tr:last-child td{border-bottom:none}
+tr{transition:background .1s}
+tr:hover td{background:var(--surface-2)}
+
+
+.badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 10px;border-radius:6px;
+  font-size:11px;font-weight:600;
+  letter-spacing:.3px;
+}
+.badge::before{
+  content:'';display:block;
+  width:6px;height:6px;border-radius:50%;
+}
+.badge-active{background:var(--green-dim);color:var(--green)}
+.badge-active::before{background:var(--green);box-shadow:0 0 6px var(--green-glow)}
+.badge-deleted{background:var(--red-dim);color:var(--red)}
+.badge-deleted::before{background:var(--red);box-shadow:0 0 6px var(--red-glow)}
+.badge-done{background:var(--green-dim);color:var(--green)}
+.badge-done::before{background:var(--green)}
+.badge-failed{background:var(--red-dim);color:var(--red)}
+.badge-failed::before{background:var(--red)}
+.badge-uploading{background:var(--blue-dim);color:var(--blue)}
+.badge-uploading::before{background:var(--blue);animation:pulse-dot 1.5s ease infinite}
+.badge-pending{background:var(--amber-dim);color:var(--amber)}
+.badge-pending::before{background:var(--amber)}
+.badge-yes{background:var(--green-dim);color:var(--green)}
+.badge-yes::before{background:var(--green)}
+.badge-no{background:var(--red-dim);color:#a8a8a8}
+.badge-no::before{background:#666}
+
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}
+
+
+.btn{
+  padding:6px 14px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  background:var(--surface-2);
+  font-family:var(--sans);
+  font-size:12px;font-weight:600;
+  color:var(--text-2);
+  cursor:pointer;
+  transition:all .12s;
+  outline:none;
+}
+.btn:hover{background:var(--surface-3);color:var(--text);border-color:var(--border-light)}
+.btn-danger{color:var(--red);border-color:rgba(239,68,68,.25)}
+.btn-danger:hover{background:var(--red-dim);border-color:rgba(239,68,68,.4)}
+.btn-green{color:var(--green);border-color:rgba(34,197,94,.25)}
+.btn-green:hover{background:var(--green-dim);border-color:rgba(34,197,94,.4)}
+.btn-primary{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+  box-shadow:0 0 20px var(--accent-glow);
+}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+
+
+.empty{text-align:center;padding:40px;color:var(--text-3);font-size:13px}
+.mono{font-family:var(--mono);font-size:12px;color:var(--text-2)}
+.link{color:var(--blue);text-decoration:none;font-family:var(--mono);font-size:12px}
+.link:hover{text-decoration:underline;color:#60a5fa}
+.truncate{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.section{display:none}.section.active{display:block}
+
+
+.error-text{font-family:var(--mono);font-size:11px;color:var(--red);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+
+.tag{
+  display:inline-block;
+  padding:2px 8px;
+  background:var(--surface-3);
+  border-radius:4px;
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--text-2);
+  margin:1px 2px;
+}
+
+
+.modal-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(6px);
+  z-index:100;
+  display:none;align-items:center;justify-content:center;
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  width:480px;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+  animation:modalIn .25s cubic-bezier(.16,1,.3,1);
+}
+@keyframes modalIn{from{opacity:0;transform:translateY(16px) scale(.97)}}
+.modal-header{
+  padding:20px 24px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.modal-header h3{
+  font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:.5px;
+}
+.modal-close{
+  width:30px;height:30px;border-radius:8px;
+  border:none;background:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-3);font-size:18px;
+  transition:.12s;
+}
+.modal-close:hover{background:var(--surface-3);color:var(--text)}
+.modal-body{padding:24px}
+.modal-footer{
+  padding:16px 24px;
+  border-top:1px solid var(--border);
+  display:flex;justify-content:flex-end;gap:8px;
+}
+
+.form-group{margin-bottom:18px}
+.form-label{
+  display:block;
+  font-size:11px;font-weight:700;color:var(--text-2);
+  text-transform:uppercase;letter-spacing:1.5px;
+  margin-bottom:8px;
+}
+.form-input{
+  width:100%;
+  padding:10px 14px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  font-family:var(--mono);
+  font-size:13px;
+  color:var(--text);
+  background:var(--surface-2);
+  transition:border .15s;
+  outline:none;
+}
+.form-input:focus{border-color:var(--accent)}
+.form-input::placeholder{color:var(--text-3)}
+.form-hint{font-size:11px;color:var(--text-3);margin-top:6px}
+.form-error{font-size:11px;color:var(--red);margin-top:6px;display:none}
+.form-error.show{display:block}
+
+
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  padding:12px 20px;
+  background:var(--green-dim);
+  border:1px solid rgba(34,197,94,.25);
+  color:var(--green);
+  border-radius:10px;font-size:13px;font-weight:600;
+  z-index:200;
+  transform:translateY(60px);opacity:0;
+  transition:all .25s cubic-bezier(.16,1,.3,1);
+}
+.toast.error{background:var(--red-dim);border-color:rgba(239,68,68,.25);color:var(--red)}
+.toast.show{transform:translateY(0);opacity:1}
+
+
+.drop-zone{
+  border:2px dashed var(--border);
+  border-radius:var(--radius);
+  padding:32px 20px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .2s;
+  color:var(--text-3);
+  font-size:13px;
+}
+.drop-zone:hover,.drop-zone.drag-over{
+  border-color:var(--accent);
+  background:var(--accent-dim);
+  color:var(--accent);
+}
+.drop-zone.has-file{
+  border-color:var(--green);
+  border-style:solid;
+  background:var(--green-dim);
+  color:var(--green);
+}
+
+
+.acc-check{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  margin-bottom:6px;
+  cursor:pointer;
+  transition:all .12s;
+  user-select:none;
+}
+.acc-check:hover{border-color:var(--border-light);background:var(--surface-2)}
+.acc-check.selected{border-color:rgba(239,68,68,.3);background:var(--accent-dim)}
+.acc-check input[type=checkbox]{display:none}
+.acc-check-box{
+  width:18px;height:18px;
+  border:2px solid var(--border-light);
+  border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  transition:all .12s;
+}
+.acc-check.selected .acc-check-box{
+  background:var(--accent);border-color:var(--accent);
+}
+.acc-check.selected .acc-check-box::after{
+  content:'';display:block;
+  width:5px;height:9px;
+  border:solid #fff;border-width:0 2px 2px 0;
+  transform:rotate(45deg);margin-top:-2px;
+}
+.acc-check-info{flex:1;min-width:0}
+.acc-check-name{font-size:13px;font-weight:600;color:var(--text)}
+.acc-check-id{font-family:var(--mono);font-size:11px;color:var(--text-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acc-check-badge{font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px}
+
+textarea.form-input{font-family:var(--sans);line-height:1.5}
+select.form-input{appearance:auto}
+
+
+@media(max-width:840px){
+  .sidebar{display:none}
+  .main{margin-left:0;padding:20px 16px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+
+
+.qtag{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:4px 10px;
+  background:var(--surface-3);
+  border:1px solid var(--border);
+  border-radius:6px;
+  font-family:var(--mono);font-size:11px;
+  color:var(--text-2);
+  cursor:pointer;
+  transition:all .12s;
+  user-select:none;
+}
+.qtag:hover{background:var(--surface-2);border-color:var(--border-light);color:var(--text)}
+.qtag.active{background:var(--accent-dim);border-color:rgba(239,68,68,.3);color:var(--accent)}
+.qtag .qtag-count{
+  font-size:9px;color:var(--text-3);
+  background:var(--surface);
+  padding:1px 5px;border-radius:3px;
+  margin-left:2px;
+}
+.qtag .qtag-x{
+  font-size:13px;color:var(--text-3);
+  margin-left:2px;
+  opacity:0;transition:opacity .1s;
+}
+.qtag:hover .qtag-x{opacity:1}
+.qtag .qtag-x:hover{color:var(--red)}
+
+
+.log-entry{
+  padding:8px 14px;
+  border-bottom:1px solid var(--border);
+  font-family:var(--mono);
+  font-size:12px;
+  line-height:1.6;
+  display:flex;gap:12px;
+  align-items:flex-start;
+}
+.log-entry:last-child{border-bottom:none}
+.log-entry:hover{background:var(--surface-2)}
+.log-time{color:var(--text-3);white-space:nowrap;min-width:70px}
+.log-level{font-weight:700;min-width:44px;text-transform:uppercase;font-size:10px;padding:2px 6px;border-radius:3px;text-align:center}
+.log-level.info{color:var(--blue);background:var(--blue-dim)}
+.log-level.warn{color:var(--amber);background:var(--amber-dim)}
+.log-level.error{color:var(--red);background:var(--red-dim)}
+.log-method{font-weight:600;min-width:50px}
+.log-method.GET{color:var(--green)}
+.log-method.POST{color:var(--blue)}
+.log-method.DELETE{color:var(--red)}
+.log-method.PUT,.log-method.PATCH{color:var(--amber)}
+.log-path{color:var(--text)}
+.log-status{font-weight:600;min-width:30px}
+.log-status.s2{color:var(--green)}
+.log-status.s4{color:var(--amber)}
+.log-status.s5{color:var(--red)}
+.log-duration{color:var(--text-3)}
+.log-message{color:var(--text-2);flex:1}
+.log-controls{display:flex;gap:8px;align-items:center;margin-bottom:16px}
+.log-controls select,.log-controls input{
+  padding:6px 10px;border:1px solid var(--border);border-radius:6px;
+  background:var(--surface-2);color:var(--text);font-family:var(--mono);font-size:12px;
+  outline:none;
+}
+.log-controls select:focus,.log-controls input:focus{border-color:var(--accent)}
+.log-scroll{max-height:600px;overflow-y:auto}
+
+
+.log-split{display:grid;grid-template-columns:1fr 1fr;gap:16px;height:calc(100vh - 180px);min-height:400px}
+.log-split-left,.log-split-right{display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.log-split-left .card-body,.log-split-right .card-body{flex:1;overflow:hidden;padding:0}
+.log-split-left .log-scroll{height:100%;overflow-y:auto}
+.log-detail-content{
+  height:100%;overflow-y:auto;padding:16px;
+  font-family:var(--mono);font-size:12px;line-height:1.7;
+}
+.log-detail-content pre{
+  white-space:pre-wrap;word-break:break-all;
+  color:var(--text);margin:0;
+}
+.log-detail-field{
+  display:flex;gap:8px;padding:6px 0;
+  border-bottom:1px solid var(--border);
+}
+.log-detail-field:last-child{border-bottom:none}
+.log-detail-key{
+  min-width:90px;
+  font-weight:600;color:var(--text-3);
+  text-transform:uppercase;font-size:10px;
+  letter-spacing:1px;padding-top:2px;
+}
+.log-detail-val{color:var(--text);word-break:break-all;flex:1}
+.log-detail-val.val-info{color:var(--blue)}
+.log-detail-val.val-warn{color:var(--amber)}
+.log-detail-val.val-error{color:var(--red)}
+.log-detail-val a{color:var(--blue);text-decoration:none}
+.log-detail-val a:hover{text-decoration:underline}
+.log-entry.selected td,.log-entry.selected{background:var(--accent-dim) !important;border-color:rgba(239,68,68,.2)}
+
+@media(max-width:840px){
+  .log-split{grid-template-columns:1fr}
+}
+
+
+.sidebar{animation:slideIn .4s cubic-bezier(.16,1,.3,1) both}
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px)}}
+.main{animation:fadeUp .5s .15s cubic-bezier(.16,1,.3,1) both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}}
+.stat{opacity:0;animation:fadeUp .4s cubic-bezier(.16,1,.3,1) both}
+.stat:nth-child(1){animation-delay:.2s}
+.stat:nth-child(2){animation-delay:.25s}
+.stat:nth-child(3){animation-delay:.3s}
+.stat:nth-child(4){animation-delay:.35s}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2 31.4 31.4 0 000 12a31.4 31.4 0 00.5 5.8 3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1A31.4 31.4 0 0024 12a31.4 31.4 0 00-.5-5.8zM9.6 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+      </div>
+      <h1>Shorts<br><span>Uploader</span></h1>
+      <div class="brand-sub">Multi-account manager</div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-item active" data-section="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" data-section="accounts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 00-16 0"/></svg>
+        Accounts
+        <span class="nav-count" id="nav-accounts">0</span>
+      </button>
+      <button class="nav-item" data-section="uploads">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Uploads
+        <span class="nav-count" id="nav-uploads">0</span>
+      </button>
+      <button class="nav-item" data-section="newupload">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        New Upload
+      </button>
+      <button class="nav-item" data-section="presets">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4Z"/></svg>
+        Presets
+      </button>
+      <button class="nav-item" data-section="schedules">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Schedules
+      </button>
+      <button class="nav-item" data-section="logs">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Logs
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <span>YT Shorts Uploader <span class="version">v1.0</span></span>
+    </div>
+  </aside>
+
+  
+  <main class="main">
+
+    
+    <div class="section active" id="sec-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Dashboard</div>
+          <div class="page-desc">Overview of your upload operations</div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Accounts</div>
+          <div class="stat-value blue" id="stat-accounts">--</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Uploaded</div>
+          <div class="stat-value green" id="stat-done">--</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Failed</div>
+          <div class="stat-value red" id="stat-failed">--</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Scheduled</div>
+          <div class="stat-value amber" id="stat-schedules">--</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>Recent Uploads</h3></div>
+        <div class="card-body" id="dashboard-uploads">
+          <div class="empty">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="section" id="sec-accounts">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Accounts</div>
+          <div class="page-desc">Connected YouTube accounts via OAuth2</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="loadAccounts()">Refresh</button>
+          <button class="btn btn-green" onclick="authorizeAll()">Authorize All</button>
+          <button class="btn btn-primary" onclick="window.open('/api/auth/new','_blank')">+ Add via Google</button>
+          <button class="btn" onclick="openAddAccount()">+ Manual (ID/Secret)</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <table>
+            <thead><tr><th>ID</th><th>Client ID</th><th>Channel</th><th>Status</th><th>Auth</th><th></th></tr></thead>
+            <tbody id="accounts-tbody"><tr><td colspan="6" class="empty">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="section" id="sec-newupload">
+      <div class="page-header">
+        <div>
+          <div class="page-title">New Upload</div>
+          <div class="page-desc">Upload a Shorts video to your YouTube accounts</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        
+        <div class="card">
+          <div class="card-header"><h3>Video &amp; Metadata</h3></div>
+          <div class="card-body" style="padding:20px">
+
+            
+            <div class="form-group">
+              <label class="form-label">Video File</label>
+              <div id="upload-drop-zone" class="drop-zone" onclick="document.getElementById('video-file-input').click()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:32px;height:32px;margin-bottom:8px;opacity:.4"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <div id="drop-zone-text">Drop video or click to select</div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:4px">.mp4, .mov, .avi, .mkv, .webm &mdash; up to 5 GB</div>
+              </div>
+              <input type="file" id="video-file-input" accept=".mp4,.mov,.avi,.mkv,.webm" style="display:none" onchange="handleVideoSelect(this)">
+              <div id="upload-progress" style="display:none;margin-top:10px">
+                <div style="height:4px;background:var(--surface-3);border-radius:2px;overflow:hidden">
+                  <div id="upload-bar" style="height:100%;width:0%;background:var(--accent);transition:width .3s"></div>
+                </div>
+                <div id="upload-progress-text" style="font-size:11px;color:var(--text-3);margin-top:4px"></div>
+              </div>
+            </div>
+
+            
+            <div class="form-group">
+              <label class="form-label">Or select from pending/</label>
+              <select id="pending-select" class="form-input" style="cursor:pointer">
+                <option value="">-- select pending video --</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Title</label>
+              <input class="form-input" type="text" id="up-title" placeholder="My Amazing Short" oninput="this.value=this.value.replace(/<3/g,'❤️')">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea class="form-input" id="up-desc" rows="3" placeholder="Check out this video!" style="resize:vertical;font-family:var(--sans)"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Tags</label>
+              <input class="form-input" type="text" id="up-tags" placeholder="shorts, viral, funny (comma-separated)">
+              <div id="quick-tags-bar" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px"></div>
+              <div style="margin-top:8px;display:flex;gap:6px">
+                <input class="form-input" type="text" id="new-quick-tag" placeholder="New quick tag..." style="flex:1;padding:6px 10px;font-size:12px">
+                <button class="btn" onclick="addQuickTag()" style="font-size:11px;padding:6px 12px">+ Add</button>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div class="form-group">
+                <label class="form-label">Privacy</label>
+                <select id="up-privacy" class="form-input" style="cursor:pointer">
+                  <option value="public">Public</option>
+                  <option value="unlisted">Unlisted</option>
+                  <option value="private">Private</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Schedule</label>
+                <select id="up-timing" class="form-input" style="cursor:pointer" onchange="toggleScheduleTime()">
+                  <option value="now">Upload Now</option>
+                  <option value="later">Schedule for Later</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group" id="schedule-time-group" style="display:none">
+              <label class="form-label">Upload Date &amp; Time</label>
+              <input class="form-input" type="datetime-local" id="up-schedule-time">
+            </div>
+          </div>
+        </div>
+
+        
+        <div>
+          <div class="card">
+            <div class="card-header"><h3>Target Accounts</h3></div>
+            <div class="card-body" style="padding:20px">
+              <div id="account-checkboxes" style="max-height:280px;overflow-y:auto">
+                <div class="empty">Loading accounts...</div>
+              </div>
+              <div style="margin-top:12px;display:flex;gap:8px">
+                <button class="btn" onclick="toggleAllAccounts(true)" style="flex:1">Select All</button>
+                <button class="btn" onclick="toggleAllAccounts(false)" style="flex:1">Deselect All</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:16px">
+            <div class="card-body" style="padding:20px">
+              <div id="upload-summary" style="font-size:13px;color:var(--text-2);margin-bottom:16px">
+                Select a video and fill in the details to begin.
+              </div>
+              <div class="form-error" id="upload-error"></div>
+              <button class="btn btn-primary" id="btn-start-upload" onclick="startUpload()" style="width:100%;padding:12px;font-size:14px;margin-top:8px">
+                Upload to YouTube
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="section" id="sec-uploads">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Uploads</div>
+          <div class="page-desc">Complete upload history across all accounts</div>
+        </div>
+        <button class="btn" onclick="loadUploads()">Refresh</button>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <table>
+            <thead><tr><th>ID</th><th>Video</th><th>Title</th><th>Tags</th><th>Account</th><th>YouTube</th><th>Status</th><th>Date</th><th></th></tr></thead>
+            <tbody id="uploads-tbody"><tr><td colspan="9" class="empty">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="section" id="sec-presets">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Presets</div>
+          <div class="page-desc">Video metadata templates for quick uploads</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <table>
+            <thead><tr><th>ID</th><th>Name</th><th>Title Template</th><th>Description</th><th>Category</th><th>Privacy</th><th>Tags</th></tr></thead>
+            <tbody id="presets-tbody"><tr><td colspan="7" class="empty">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="section" id="sec-schedules">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Schedules</div>
+          <div class="page-desc">Automated upload schedules via cron</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <table>
+            <thead><tr><th>ID</th><th>Cron</th><th>Title</th><th>Tags</th><th>Enabled</th><th>Last Run</th><th>Next Run</th></tr></thead>
+            <tbody id="schedules-tbody"><tr><td colspan="7" class="empty">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="section" id="sec-logs">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Logs</div>
+          <div class="page-desc">JSON request logs with daily rotation</div>
+        </div>
+        <button class="btn" onclick="loadLogs()">Refresh</button>
+      </div>
+      <div class="log-controls">
+        <select id="log-category-select" onchange="loadLogs()">
+          <option value="admin">Admin Panel</option>
+          <option value="youtube">YouTube API</option>
+        </select>
+        <select id="log-date-select" onchange="loadLogs()"></select>
+        <select id="log-level-filter" onchange="filterLogs()">
+          <option value="all">All levels</option>
+          <option value="info">Info only</option>
+          <option value="warn">Warn+</option>
+          <option value="error">Errors only</option>
+        </select>
+        <input type="text" id="log-search" placeholder="Filter by path, message, video..." oninput="filterLogs()" style="flex:1">
+      </div>
+      <div class="log-split">
+        
+        <div class="card log-split-left">
+          <div class="card-body" style="padding:0">
+            <div class="log-scroll" id="logs-container">
+              <div class="empty">Loading logs...</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card log-split-right">
+          <div class="card-header"><h3>Log Detail</h3></div>
+          <div class="card-body" style="padding:0">
+            <div id="log-detail" class="log-detail-content">
+              <div class="empty">Select a log entry to view details</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+
+<div class="modal-overlay" id="add-account-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Add Account</h3>
+      <button class="modal-close" onclick="closeAddAccount()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Client ID</label>
+        <input class="form-input" type="text" id="input-client-id" placeholder="123456789.apps.googleusercontent.com">
+        <div class="form-hint">From Google Cloud Console &rarr; OAuth 2.0 Client IDs</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Client Secret</label>
+        <input class="form-input" type="text" id="input-client-secret" placeholder="GOCSPX-...">
+      </div>
+      <div class="form-error" id="add-account-error"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeAddAccount()">Cancel</button>
+      <button class="btn btn-primary" id="btn-add-account" onclick="submitAddAccount()">Add Account</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '/api';
+let accountsData=[], uploadsData=[], presetsData=[], schedulesData=[];
+
+
+function switchSection(name) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  document.querySelector(`.nav-item[data-section="${name}"]`).classList.add('active');
+}
+document.querySelectorAll('.nav-item').forEach(btn=>{
+  btn.addEventListener('click',()=>switchSection(btn.dataset.section));
+});
+
+
+async function api(path){const r=await fetch(API+path);return r.json();}
+
+function badge(text,cls){
+  return `<span class="badge badge-${cls||text}">${text}</span>`;
+}
+function fmtDate(d){
+  if(!d)return'—';
+  return new Date(d).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+function tagPills(tags){
+  if(!tags||!tags.length)return'—';
+  return tags.map(t=>`<span class="tag">${t}</span>`).join('');
+}
+function truncId(s,n){return s&&s.length>n?s.slice(0,n-3)+'...':s||'—';}
+
+
+async function loadAccounts(){
+  const data=await api('/accounts');
+  accountsData=data||[];
+  document.getElementById('nav-accounts').textContent=accountsData.filter(a=>!a.deletedAt).length;
+  document.getElementById('stat-accounts').textContent=accountsData.filter(a=>!a.deletedAt).length;
+  renderUploadAccounts();
+  const tb=document.getElementById('accounts-tbody');
+  if(!accountsData.length){tb.innerHTML='<tr><td colspan="6" class="empty">No accounts. Import via CLI.</td></tr>';return;}
+  tb.innerHTML=accountsData.map(a=>{
+    const status=a.deletedAt?'deleted':'active';
+    const authBadge=a.authorized?badge('yes'):badge('no');
+    const channel=a.channelName||(a.authorized?'authorized':'—');
+    const authBtn = (!a.deletedAt && !a.authorized)
+      ? `<button class="btn btn-primary" onclick="authorizeAccount(${a.id})" style="font-size:11px;padding:4px 10px">Authorize</button>`
+      : '';
+    const actions = a.deletedAt
+      ? `<div style="display:flex;gap:4px"><button class="btn btn-green" onclick="restoreAccount(${a.id})">Restore</button><button class="btn btn-danger" onclick="hardDeleteAccount(${a.id})">Remove</button></div>`
+      : `<div style="display:flex;gap:4px">${authBtn}<button class="btn btn-danger" onclick="deleteAccount(${a.id})">Delete</button></div>`;
+    return`<tr>
+      <td class="mono">${a.id}</td>
+      <td class="mono">${truncId(a.clientId,32)}</td>
+      <td>${channel}</td>
+      <td>${badge(status)}</td>
+      <td>${authBadge}</td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('');
+}
+
+function authorizeAccount(id){
+  window.open('/api/accounts/' + id + '/auth', '_blank');
+}
+
+async function authorizeAll(){
+  const data = await api('/auth/all');
+  if (!data || !data.length) {
+    toast('All accounts are already authorized');
+    return;
+  }
+  
+  for (let i = 0; i < data.length; i++) {
+    const delay = i * 1500; 
+    setTimeout(() => {
+      window.open(data[i].authUrl, '_blank');
+    }, delay);
+  }
+  toast(data.length + ' authorization window(s) opened');
+}
+
+async function deleteAccount(id){
+  await fetch(API+'/accounts/'+id,{method:'DELETE'});
+  loadAccounts();
+}
+async function hardDeleteAccount(id){
+  if(!confirm('Permanently delete account #'+id+'? This cannot be undone.')) return;
+  await fetch(API+'/accounts/'+id+'/permanent',{method:'DELETE'});
+  toast('Account #'+id+' permanently deleted');
+  loadAccounts();
+}
+async function restoreAccount(id){
+  await fetch(API+'/accounts/'+id+'/restore',{method:'POST'});
+  loadAccounts();
+}
+
+
+async function loadUploads(){
+  const data=await api('/uploads');
+  uploadsData=data||[];
+  document.getElementById('nav-uploads').textContent=uploadsData.length;
+  document.getElementById('stat-done').textContent=uploadsData.filter(u=>u.status==='done').length;
+  document.getElementById('stat-failed').textContent=uploadsData.filter(u=>u.status==='failed').length;
+
+  
+  renderUploadsTable('dashboard-uploads',uploadsData.slice(0,5),true);
+  
+  renderUploadsTable('uploads-tbody',uploadsData,false);
+}
+
+function renderUploadsTable(elId,list,isCard){
+  const el=document.getElementById(elId);
+  if(!list||!list.length){
+    el.innerHTML=isCard?'<div class="empty">No uploads yet</div>':'<tr><td colspan="8" class="empty">No uploads yet</td></tr>';
+    return;
+  }
+  if(isCard){
+    el.innerHTML=`<table>
+      <thead><tr><th>Video</th><th>Title</th><th>Account</th><th>YouTube</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody>${list.map(u=>uploadRow(u,false)).join('')}</tbody>
+    </table>`;
+  } else {
+    el.innerHTML=list.map(u=>uploadRow(u,true)).join('');
+  }
+}
+
+function uploadRow(u,showFull){
+  const yt=u.youtubeId?`<a class="link" href="https://youtube.com/shorts/${u.youtubeId}" target="_blank">${u.youtubeId}</a>`:'—';
+  const file=u.videoPath?u.videoPath.split(/[/\\]/).pop():'—';
+  const tags=showFull?`<td>${tagPills(u.tags)}</td>`:'';
+  const idCol=showFull?`<td class="mono">${u.id}</td>`:'';
+  const delCol=showFull?`<td><button class="btn btn-danger" onclick="deleteUpload(${u.id})" style="font-size:10px;padding:3px 8px">&times;</button></td>`:'';
+  return`<tr>
+    ${idCol}
+    <td class="mono truncate" title="${u.videoPath||''}">${file}</td>
+    <td>${u.title||'—'}</td>
+    ${tags}
+    <td class="mono">${u.accountId}</td>
+    <td>${yt}</td>
+    <td>${badge(u.status)}</td>
+    <td class="mono">${fmtDate(u.createdAt)}</td>
+    ${delCol}
+  </tr>`;
+}
+
+async function deleteUpload(id){
+  await fetch(API+'/uploads/'+id,{method:'DELETE'});
+  toast('Upload #'+id+' deleted');
+  loadUploads();
+}
+
+
+async function loadPresets(){
+  const data=await api('/presets');
+  presetsData=data||[];
+  const tb=document.getElementById('presets-tbody');
+  if(!presetsData.length){tb.innerHTML='<tr><td colspan="7" class="empty">No presets. Create via CLI.</td></tr>';return;}
+  tb.innerHTML=presetsData.map(p=>`<tr>
+    <td class="mono">${p.id}</td>
+    <td><strong>${p.name}</strong></td>
+    <td class="mono">${p.titleTemplate}</td>
+    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.description||'—'}</td>
+    <td class="mono">${p.categoryId}</td>
+    <td>${badge(p.privacy,p.privacy==='public'?'active':p.privacy==='private'?'deleted':'pending')}</td>
+    <td>${tagPills(p.tags)}</td>
+  </tr>`).join('');
+}
+
+
+async function loadSchedules(){
+  const data=await api('/schedules');
+  schedulesData=data||[];
+  document.getElementById('stat-schedules').textContent=schedulesData.filter(s=>s.enabled).length;
+  const tb=document.getElementById('schedules-tbody');
+  if(!schedulesData.length){tb.innerHTML='<tr><td colspan="7" class="empty">No schedules. Create via CLI.</td></tr>';return;}
+  tb.innerHTML=schedulesData.map(s=>`<tr>
+    <td class="mono">${s.id}</td>
+    <td class="mono" style="color:var(--amber)">${s.cronExpr}</td>
+    <td>${s.title||'—'}</td>
+    <td>${tagPills(s.tags)}</td>
+    <td>${s.enabled?badge('yes'):badge('no')}</td>
+    <td class="mono">${fmtDate(s.lastRunAt)}</td>
+    <td class="mono">${fmtDate(s.nextRunAt)}</td>
+  </tr>`).join('');
+}
+
+
+function toast(msg, isError){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.classList.remove('show','error');
+  if(isError) el.classList.add('error');
+  void el.offsetWidth;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+
+function openAddAccount(){
+  document.getElementById('add-account-modal').classList.add('show');
+  document.getElementById('input-client-id').value='';
+  document.getElementById('input-client-secret').value='';
+  document.getElementById('add-account-error').classList.remove('show');
+  setTimeout(()=>document.getElementById('input-client-id').focus(),100);
+}
+function closeAddAccount(){
+  document.getElementById('add-account-modal').classList.remove('show');
+}
+
+async function submitAddAccount(){
+  const clientId=document.getElementById('input-client-id').value.trim();
+  const clientSecret=document.getElementById('input-client-secret').value.trim();
+  const errEl=document.getElementById('add-account-error');
+  errEl.classList.remove('show');
+
+  if(!clientId||!clientSecret){
+    errEl.textContent='Both fields are required';
+    errEl.classList.add('show');
+    return;
+  }
+
+  const btn=document.getElementById('btn-add-account');
+  btn.textContent='Adding...';btn.disabled=true;
+
+  try{
+    const res=await fetch(API+'/accounts',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({clientId, clientSecret})
+    });
+    const data=await res.json();
+    if(!res.ok){
+      errEl.textContent=data.error||'Failed to add account';
+      errEl.classList.add('show');
+      return;
+    }
+    closeAddAccount();
+    toast('Account added successfully');
+    loadAccounts();
+  }catch(e){
+    errEl.textContent='Network error: '+e.message;
+    errEl.classList.add('show');
+  }finally{
+    btn.textContent='Add Account';btn.disabled=false;
+  }
+}
+
+
+document.getElementById('add-account-modal').addEventListener('click',e=>{
+  if(e.target===e.currentTarget) closeAddAccount();
+});
+
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') closeAddAccount();
+});
+
+
+let quickTagsData = [];
+
+async function loadQuickTags() {
+  quickTagsData = await api('/quick-tags') || [];
+  renderQuickTags();
+}
+
+function renderQuickTags() {
+  const bar = document.getElementById('quick-tags-bar');
+  if (!quickTagsData.length) {
+    bar.innerHTML = '<span style="font-size:11px;color:var(--text-3)">No quick tags yet</span>';
+    return;
+  }
+  
+  const currentTags = getTagsFromInput();
+  bar.innerHTML = quickTagsData.map(t => {
+    const isActive = currentTags.includes(t.tag);
+    const count = t.useCount > 0 ? `<span class="qtag-count">${t.useCount}</span>` : '';
+    return `<span class="qtag ${isActive?'active':''}" data-tag="${t.tag}" data-id="${t.id}" onclick="toggleQuickTag(this)">
+      #${t.tag}${count}<span class="qtag-x" onclick="event.stopPropagation();removeQuickTag(${t.id})">&times;</span>
+    </span>`;
+  }).join('');
+}
+
+function getTagsFromInput() {
+  const val = document.getElementById('up-tags').value;
+  return val.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
+}
+
+function setTagsInput(tags) {
+  document.getElementById('up-tags').value = tags.join(', ');
+}
+
+function toggleQuickTag(el) {
+  const tag = el.dataset.tag;
+  let tags = getTagsFromInput();
+  if (tags.includes(tag)) {
+    tags = tags.filter(t => t !== tag);
+  } else {
+    tags.push(tag);
+  }
+  setTagsInput(tags);
+  renderQuickTags();
+}
+
+async function addQuickTag() {
+  const input = document.getElementById('new-quick-tag');
+  const raw = input.value.trim().toLowerCase().replace(/[^a-zа-яё0-9_-]/gi, '');
+  if (!raw) return;
+  
+  const newTags = raw.split(',').map(t => t.trim()).filter(Boolean);
+  for (const tag of newTags) {
+    await fetch(API + '/quick-tags', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({tag})
+    });
+  }
+  input.value = '';
+  await loadQuickTags();
+  toast(newTags.length > 1 ? newTags.length + ' tags added' : '"' + newTags[0] + '" added');
+}
+
+async function removeQuickTag(id) {
+  await fetch(API + '/quick-tags/' + id, {method: 'DELETE'});
+  await loadQuickTags();
+}
+
+
+document.getElementById('up-tags')?.addEventListener('input', () => renderQuickTags());
+
+
+document.getElementById('new-quick-tag')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); addQuickTag(); }
+});
+
+
+let selectedFile = null;
+let uploadedFilename = null;
+
+const dropZone = document.getElementById('upload-drop-zone');
+const fileInput = document.getElementById('video-file-input');
+
+['dragenter','dragover'].forEach(ev => {
+  dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+});
+['dragleave','drop'].forEach(ev => {
+  dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.remove('drag-over'); });
+});
+dropZone.addEventListener('drop', e => {
+  const f = e.dataTransfer.files[0];
+  if (f) { fileInput.files = e.dataTransfer.files; handleVideoSelect(fileInput); }
+});
+
+function handleVideoSelect(input) {
+  const f = input.files[0];
+  if (!f) return;
+  selectedFile = f;
+  uploadedFilename = null;
+  dropZone.classList.add('has-file');
+  document.getElementById('drop-zone-text').textContent = f.name + ' (' + (f.size / 1048576).toFixed(1) + ' MB)';
+  document.getElementById('pending-select').value = '';
+  updateUploadSummary();
+
+  
+  const titleInput = document.getElementById('up-title');
+  if (!titleInput.value) {
+    titleInput.value = f.name.replace(/\.[^.]+$/, '');
+  }
+}
+
+
+async function uploadFileToServer() {
+  if (!selectedFile) return null;
+  const form = new FormData();
+  form.append('video', selectedFile);
+
+  const progress = document.getElementById('upload-progress');
+  const bar = document.getElementById('upload-bar');
+  const txt = document.getElementById('upload-progress-text');
+  progress.style.display = 'block';
+  bar.style.width = '0%';
+  txt.textContent = 'Uploading to server...';
+
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', API + '/videos/upload');
+    xhr.upload.onprogress = e => {
+      if (e.lengthComputable) {
+        const pct = Math.round(e.loaded / e.total * 100);
+        bar.style.width = pct + '%';
+        txt.textContent = pct + '% — ' + (e.loaded/1048576).toFixed(1) + ' / ' + (e.total/1048576).toFixed(1) + ' MB';
+      }
+    };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        const data = JSON.parse(xhr.responseText);
+        bar.style.width = '100%';
+        bar.style.background = 'var(--green)';
+        txt.textContent = 'File uploaded to server';
+        resolve(data.filename);
+      } else {
+        const err = JSON.parse(xhr.responseText);
+        reject(new Error(err.error || 'Upload failed'));
+      }
+    };
+    xhr.onerror = () => reject(new Error('Network error'));
+    xhr.send(form);
+  });
+}
+
+
+async function loadPendingVideos() {
+  const data = await api('/videos/pending');
+  const sel = document.getElementById('pending-select');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">-- select pending video --</option>';
+  if (data && data.length) {
+    data.forEach(name => {
+      sel.innerHTML += `<option value="${name}">${name}</option>`;
+    });
+  }
+  sel.value = current;
+}
+
+document.getElementById('pending-select').addEventListener('change', function() {
+  if (this.value) {
+    selectedFile = null;
+    uploadedFilename = this.value;
+    dropZone.classList.remove('has-file');
+    document.getElementById('drop-zone-text').textContent = 'Drop video or click to select';
+    
+    const titleInput = document.getElementById('up-title');
+    if (!titleInput.value) {
+      titleInput.value = this.value.replace(/\.[^.]+$/, '');
+    }
+  } else {
+    uploadedFilename = null;
+  }
+  updateUploadSummary();
+});
+
+function toggleScheduleTime() {
+  const group = document.getElementById('schedule-time-group');
+  group.style.display = document.getElementById('up-timing').value === 'later' ? 'block' : 'none';
+}
+
+
+function renderUploadAccounts() {
+  const wrap = document.getElementById('account-checkboxes');
+  const active = accountsData.filter(a => !a.deletedAt);
+  if (!active.length) {
+    wrap.innerHTML = '<div class="empty">No active accounts</div>';
+    return;
+  }
+  wrap.innerHTML = active.map(a => {
+    const authLabel = a.authorized
+      ? `<span class="acc-check-badge" style="background:var(--green-dim);color:var(--green)">Auth</span>`
+      : `<span class="acc-check-badge" style="background:var(--amber-dim);color:var(--amber)">No auth</span>`;
+    const channel = a.channelName ? ` &mdash; ${a.channelName}` : '';
+    return `<label class="acc-check selected" data-id="${a.id}">
+      <input type="checkbox" value="${a.id}" checked>
+      <div class="acc-check-box"></div>
+      <div class="acc-check-info">
+        <div class="acc-check-name">Account #${a.id}${channel}</div>
+        <div class="acc-check-id">${a.clientId}</div>
+      </div>
+      ${authLabel}
+    </label>`;
+  }).join('');
+
+  wrap.querySelectorAll('.acc-check').forEach(el => {
+    el.addEventListener('click', e => {
+      if (e.target.tagName === 'INPUT') return;
+      const cb = el.querySelector('input');
+      cb.checked = !cb.checked;
+      el.classList.toggle('selected', cb.checked);
+      updateUploadSummary();
+    });
+  });
+  updateUploadSummary();
+}
+
+function toggleAllAccounts(select) {
+  document.querySelectorAll('#account-checkboxes .acc-check').forEach(el => {
+    const cb = el.querySelector('input');
+    cb.checked = select;
+    el.classList.toggle('selected', select);
+  });
+  updateUploadSummary();
+}
+
+function updateUploadSummary() {
+  const file = selectedFile ? selectedFile.name : (uploadedFilename || 'none');
+  const count = document.querySelectorAll('#account-checkboxes input:checked').length;
+  const timing = document.getElementById('up-timing').value === 'now' ? 'immediately' : 'scheduled';
+  document.getElementById('upload-summary').innerHTML =
+    `<strong>${file}</strong> &rarr; <strong>${count}</strong> account${count!==1?'s':''} (${timing})`;
+}
+
+
+async function startUpload() {
+  const errEl = document.getElementById('upload-error');
+  errEl.classList.remove('show');
+
+  const title = document.getElementById('up-title').value.trim();
+  const desc = document.getElementById('up-desc').value.trim();
+  const tagsStr = document.getElementById('up-tags').value.trim();
+  const privacy = document.getElementById('up-privacy').value;
+  const timing = document.getElementById('up-timing').value;
+  const scheduleTime = document.getElementById('up-schedule-time').value;
+  const checkedIds = [...document.querySelectorAll('#account-checkboxes input:checked')].map(i=>+i.value);
+
+  if (!title) { errEl.textContent='Title is required'; errEl.classList.add('show'); return; }
+  if (!checkedIds.length) { errEl.textContent='Select at least one account'; errEl.classList.add('show'); return; }
+
+  
+  let filename = uploadedFilename;
+  const btn = document.getElementById('btn-start-upload');
+
+  if (selectedFile && !uploadedFilename) {
+    
+    btn.textContent = 'Uploading file...'; btn.disabled = true;
+    try {
+      filename = await uploadFileToServer();
+      uploadedFilename = filename;
+    } catch(e) {
+      errEl.textContent = 'File upload failed: ' + e.message;
+      errEl.classList.add('show');
+      btn.textContent = 'Upload to YouTube'; btn.disabled = false;
+      return;
+    }
+  }
+
+  if (!filename) { errEl.textContent='Select a video file'; errEl.classList.add('show'); btn.textContent='Upload to YouTube'; btn.disabled=false; return; }
+
+  const tags = tagsStr ? tagsStr.split(',').map(t=>t.trim()).filter(Boolean) : [];
+  const body = { filename, title, description: desc, tags, accountIds: checkedIds, privacy };
+  if (timing === 'later' && scheduleTime) {
+    body.scheduleAt = new Date(scheduleTime).toISOString();
+  }
+
+  btn.textContent = timing==='now' ? 'Starting upload...' : 'Scheduling...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(API + '/upload', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed');
+
+    if (data.status === 'scheduled') {
+      toast('Upload scheduled for ' + new Date(body.scheduleAt).toLocaleString('ru-RU'));
+    } else {
+      toast('Upload started on ' + data.accounts + ' accounts');
+    }
+
+    
+    selectedFile = null; uploadedFilename = null;
+    dropZone.classList.remove('has-file');
+    document.getElementById('drop-zone-text').textContent = 'Drop video or click to select';
+    document.getElementById('upload-progress').style.display = 'none';
+    document.getElementById('up-title').value = '';
+    document.getElementById('up-desc').value = '';
+    document.getElementById('up-tags').value = '';
+    document.getElementById('pending-select').value = '';
+    loadPendingVideos();
+
+    
+    setTimeout(() => { loadUploads(); }, 3000);
+
+  } catch(e) {
+    errEl.textContent = e.message;
+    errEl.classList.add('show');
+    toast(e.message, true);
+  } finally {
+    btn.textContent = 'Upload to YouTube'; btn.disabled = false;
+  }
+}
+
+
+let allLogs = [];
+
+async function loadLogDates() {
+  const cat = document.getElementById('log-category-select').value;
+  const dates = await api('/logs/dates?category=' + cat);
+  const sel = document.getElementById('log-date-select');
+  sel.innerHTML = '';
+  const today = new Date().toISOString().slice(0,10);
+  if (!dates || !dates.length) {
+    sel.innerHTML = `<option value="${today}">${today}</option>`;
+  } else {
+    [...dates].reverse().forEach(d => {
+      sel.innerHTML += `<option value="${d}">${d}</option>`;
+    });
+  }
+}
+
+async function loadLogs() {
+  await loadLogDates();
+  const cat = document.getElementById('log-category-select').value;
+  const date = document.getElementById('log-date-select').value;
+  allLogs = await api('/logs?category=' + cat + '&date=' + date) || [];
+  filterLogs();
+}
+
+let filteredLogs = [];
+let selectedLogIdx = -1;
+
+function filterLogs() {
+  const level = document.getElementById('log-level-filter').value;
+  const search = document.getElementById('log-search').value.toLowerCase();
+  const container = document.getElementById('logs-container');
+  const cat = document.getElementById('log-category-select').value;
+
+  filteredLogs = [...allLogs];
+  if (level !== 'all') {
+    const levels = level === 'warn' ? ['warn','error'] : [level];
+    filteredLogs = filteredLogs.filter(e => levels.includes(e.level));
+  }
+  if (search) {
+    filteredLogs = filteredLogs.filter(e =>
+      (e.path && e.path.toLowerCase().includes(search)) ||
+      (e.message && e.message.toLowerCase().includes(search)) ||
+      (e.method && e.method.toLowerCase().includes(search)) ||
+      (e.videoFile && e.videoFile.toLowerCase().includes(search)) ||
+      (e.youtubeId && e.youtubeId.toLowerCase().includes(search))
+    );
+  }
+  filteredLogs.reverse();
+
+  if (!filteredLogs.length) {
+    container.innerHTML = '<div class="empty">No log entries for this date/category</div>';
+    document.getElementById('log-detail').innerHTML = '<div class="empty">No entry selected</div>';
+    return;
+  }
+
+  container.innerHTML = filteredLogs.map((e, idx) => {
+    const time = e.timestamp ? new Date(e.timestamp).toLocaleTimeString('ru-RU') : '';
+    const lvl = `<span class="log-level ${e.level||'info'}">${e.level||'info'}</span>`;
+    let summary = '';
+
+    if (cat === 'youtube') {
+      const acct = e.accountId ? `<span class="mono" style="color:var(--blue)">acc#${e.accountId}</span>` : '';
+      const video = e.videoFile ? `<span class="mono" style="color:var(--amber)">${truncId(e.videoFile,25)}</span>` : '';
+      summary = `${acct} ${video} <span class="log-message">${e.message||''}</span>`;
+    } else if (e.method) {
+      const statusCls = e.status < 300 ? 's2' : e.status < 500 ? 's4' : 's5';
+      summary = `<span class="log-method ${e.method}">${e.method}</span><span class="log-path">${e.path||''}</span><span class="log-status ${statusCls}">${e.status}</span><span class="log-duration">${e.duration||''}</span>`;
+    } else {
+      summary = `<span class="log-message">${e.message||''}</span>`;
+    }
+
+    return `<div class="log-entry${idx===selectedLogIdx?' selected':''}" onclick="selectLog(${idx})" style="cursor:pointer">
+      <span class="log-time">${time}</span>
+      ${lvl}
+      ${summary}
+    </div>`;
+  }).join('');
+
+  
+  if (selectedLogIdx < 0 && filteredLogs.length) selectLog(0);
+}
+
+function selectLog(idx) {
+  selectedLogIdx = idx;
+  const e = filteredLogs[idx];
+  if (!e) return;
+
+  
+  document.querySelectorAll('#logs-container .log-entry').forEach((el, i) => {
+    el.classList.toggle('selected', i === idx);
+  });
+
+  
+  const detail = document.getElementById('log-detail');
+  const fields = [];
+
+  const addField = (key, val, cls) => {
+    if (val === undefined || val === null || val === '') return;
+    fields.push(`<div class="log-detail-field"><div class="log-detail-key">${key}</div><div class="log-detail-val ${cls||''}">${val}</div></div>`);
+  };
+
+  addField('Timestamp', e.timestamp ? new Date(e.timestamp).toLocaleString('ru-RU', {year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}) : '');
+  addField('Level', e.level, 'val-' + (e.level||'info'));
+  addField('Category', e.category);
+  if (e.method) {
+    addField('Method', `<span class="log-method ${e.method}">${e.method}</span>`);
+    addField('Path', e.path);
+    addField('Status', e.status);
+    addField('Duration', e.duration);
+    addField('IP', e.ip);
+    addField('User Agent', e.userAgent);
+  }
+  if (e.message) addField('Message', e.message);
+  if (e.accountId) addField('Account ID', e.accountId);
+  if (e.videoFile) addField('Video File', e.videoFile);
+  if (e.youtubeId) addField('YouTube ID', `<a href="https://youtube.com/shorts/${e.youtubeId}" target="_blank">${e.youtubeId}</a>`);
+  if (e.error) addField('Error', e.error, 'val-error');
+
+  
+  fields.push(`<div class="log-detail-field" style="flex-direction:column;gap:6px"><div class="log-detail-key">Raw JSON</div><pre style="background:var(--surface-2);padding:12px;border-radius:6px;font-size:11px;overflow-x:auto">${JSON.stringify(e, null, 2)}</pre></div>`);
+
+  detail.innerHTML = fields.join('');
+}
+
+
+loadAccounts().then(() => renderUploadAccounts());
+loadUploads();
+loadPresets();
+loadSchedules();
+loadPendingVideos();
+loadQuickTags();
+loadLogs();
+</script>
+
+</body>
+</html>

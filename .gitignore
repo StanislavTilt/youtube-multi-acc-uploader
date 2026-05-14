@@ -1,0 +1,16 @@
+.env
+data.db
+data.db-journal
+data.db-wal
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+videos/pending/*
+videos/uploaded/*
+!videos/pending/.gitkeep
+!videos/uploaded/.gitkeep

@@ -1,0 +1,5 @@
+{"timestamp":"2026-04-05T12:18:12+02:00","level":"error","category":"youtube","message":"New account OAuth failed: exchange code: oauth2: \"invalid_grant\" \"Bad Request\""}
+{"timestamp":"2026-04-05T12:18:47+02:00","level":"info","category":"youtube","message":"Upload started — title: blblalaala, tags: [funny fyp viral trending gaming shorts meme art comedy music dance tutorial satisfying vlog], desc: blblalaala","videoFile":"Do it for yourself and not for others. You got this. (1).mp4"}
+{"timestamp":"2026-04-05T12:18:50+02:00","level":"info","category":"youtube","message":"Upload success","accountId":1,"videoFile":"Do it for yourself and not for others. You got this. (1).mp4","youtubeId":"wqL4B_F7sBg"}
+{"timestamp":"2026-04-05T12:18:50+02:00","level":"info","category":"youtube","message":"Upload success","accountId":2,"videoFile":"Do it for yourself and not for others. You got this. (1).mp4","youtubeId":"iVZjqjY45-c"}
+{"timestamp":"2026-04-05T12:18:50+02:00","level":"info","category":"youtube","message":"Complete: 2/2 success","videoFile":"Do it for yourself and not for others. You got this. (1).mp4"}

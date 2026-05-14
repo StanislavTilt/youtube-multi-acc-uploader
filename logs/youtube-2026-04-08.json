@@ -1,0 +1,20 @@
+{"timestamp":"2026-04-08T01:01:37+02:00","level":"info","category":"youtube","message":"New account added via OAuth"}
+{"timestamp":"2026-04-08T01:03:17+02:00","level":"info","category":"youtube","message":"New account added via OAuth","accountId":6}
+{"timestamp":"2026-04-08T01:03:33+02:00","level":"info","category":"youtube","message":"New account added via OAuth","accountId":7}
+{"timestamp":"2026-04-08T01:03:55+02:00","level":"info","category":"youtube","message":"New account added via OAuth","accountId":8}
+{"timestamp":"2026-04-08T01:08:19+02:00","level":"info","category":"youtube","message":"New account added via OAuth","accountId":3}
+{"timestamp":"2026-04-08T01:11:48+02:00","level":"info","category":"youtube","message":"Upload started — title: Moonlu \u003c3, tags: [discord shorts trending fyp viral dota2 valorant cs2 gaming anime], desc: https://discord.com/moonlu","videoFile":"IMG_2221.MOV"}
+{"timestamp":"2026-04-08T01:12:20+02:00","level":"error","category":"youtube","message":"upload video: googleapi: Error 400: The request metadata specifies an invalid or empty video title., invalidTitle","accountId":2,"videoFile":"IMG_2221.MOV"}
+{"timestamp":"2026-04-08T01:12:20+02:00","level":"error","category":"youtube","message":"upload video: googleapi: Error 400: The request metadata specifies an invalid or empty video title., invalidTitle","accountId":1,"videoFile":"IMG_2221.MOV"}
+{"timestamp":"2026-04-08T01:12:20+02:00","level":"error","category":"youtube","message":"upload video: googleapi: Error 400: The request metadata specifies an invalid or empty video title., invalidTitle","accountId":3,"videoFile":"IMG_2221.MOV"}
+{"timestamp":"2026-04-08T01:12:20+02:00","level":"info","category":"youtube","message":"Complete: 0/3 success","videoFile":"IMG_2221.MOV"}
+{"timestamp":"2026-04-08T01:20:09+02:00","level":"info","category":"youtube","message":"Upload started — title: Moonlu ❤️, tags: [valorant dota2 anime gaming trending viral fyp shorts discord cs2], desc: https://discord.com/moonlu","videoFile":"IMG_2221.MOV"}
+{"timestamp":"2026-04-08T01:20:41+02:00","level":"info","category":"youtube","message":"Upload success","accountId":1,"videoFile":"IMG_2221.MOV","youtubeId":"CzI6aTnV-i4"}
+{"timestamp":"2026-04-08T01:20:41+02:00","level":"info","category":"youtube","message":"Upload success","accountId":3,"videoFile":"IMG_2221.MOV","youtubeId":"mNezMazDPpQ"}
+{"timestamp":"2026-04-08T01:20:41+02:00","level":"info","category":"youtube","message":"Upload success","accountId":2,"videoFile":"IMG_2221.MOV","youtubeId":"Y2JXFHeqQLk"}
+{"timestamp":"2026-04-08T01:20:41+02:00","level":"info","category":"youtube","message":"Complete: 3/3 success","videoFile":"IMG_2221.MOV"}
+{"timestamp":"2026-04-08T15:18:17+02:00","level":"info","category":"youtube","message":"Upload started — title: Moonlu ❤️, tags: [valorant discord anime shorts fyp viral cs2 dota2], desc: https://discord.gg/moonlu","videoFile":"IMG_4426.MOV"}
+{"timestamp":"2026-04-08T15:18:48+02:00","level":"info","category":"youtube","message":"Upload success","accountId":2,"videoFile":"IMG_4426.MOV","youtubeId":"D-DFFFWtTiE"}
+{"timestamp":"2026-04-08T15:18:48+02:00","level":"info","category":"youtube","message":"Upload success","accountId":1,"videoFile":"IMG_4426.MOV","youtubeId":"9lOjTKZGu34"}
+{"timestamp":"2026-04-08T15:18:48+02:00","level":"info","category":"youtube","message":"Upload success","accountId":3,"videoFile":"IMG_4426.MOV","youtubeId":"4QQfB4I_gc4"}
+{"timestamp":"2026-04-08T15:18:48+02:00","level":"info","category":"youtube","message":"Complete: 3/3 success","videoFile":"IMG_4426.MOV"}
